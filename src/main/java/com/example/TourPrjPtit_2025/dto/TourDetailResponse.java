@@ -20,6 +20,9 @@ public class TourDetailResponse {
     private List<LichTrinhDto> lichTrinh;
     private List<LichKhoiHanhDto> lichKhoiHanh;
 
+    public void setNgayTao(LocalDate ngayTao) {
+    }
+
     public static class LichTrinhDto {
         private String loai;      // dd/dv
         private String tenDiaDiem;

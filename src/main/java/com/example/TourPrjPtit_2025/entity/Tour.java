@@ -2,6 +2,7 @@ package com.example.TourPrjPtit_2025.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -18,8 +19,7 @@ public class Tour {
     @Column(name = "diem_khoi_hanh", length = 255)
     private String diemKhoiHanh;
 
-    // FK -> DIA_DIEM
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(name = "id_diadiem")
     private DiaDiem diaDiem;
 
@@ -37,6 +37,13 @@ public class Tour {
 
     @Column(name = "trang_thai")
     private Boolean trangThai;
+
+    @Column(name = "ngay_tao")
+    private LocalDate ngayTao;
+
+    // ✅ THÊM FIELD MỚI - SỐ LƯỢNG TOUR
+    @Column(name = "so_luong")
+    private Integer soLuong;
 
     // 1 Tour có nhiều lịch khởi hành
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
@@ -114,6 +121,23 @@ public class Tour {
 
     public void setTrangThai(Boolean trangThai) {
         this.trangThai = trangThai;
+    }
+
+    public LocalDate getNgayTao() {
+        return ngayTao;
+    }
+
+    public void setNgayTao(LocalDate ngayTao) {
+        this.ngayTao = ngayTao;
+    }
+
+    // ✅ THÊM GETTER/SETTER CHO SO_LUONG
+    public Integer getSoLuong() {
+        return soLuong;
+    }
+
+    public void setSoLuong(Integer soLuong) {
+        this.soLuong = soLuong;
     }
 
     public List<LichKhoiHanh> getLichKhoiHanhs() {

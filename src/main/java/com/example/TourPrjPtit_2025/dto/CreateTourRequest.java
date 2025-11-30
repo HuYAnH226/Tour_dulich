@@ -6,27 +6,121 @@ import java.util.List;
 
 public class CreateTourRequest {
 
-    // --------- Thông tin TOUR ----------
     private String maTour;
     private String tenTour;
     private String diemKhoiHanh;
-    private Long diaDiemId;          // id của DiaDiem (FK)
+    private Long diaDiemId; // ✅ LONG CHỮ HOA
     private String moTa;
     private Integer soNgay;
     private Integer soChoToiDa;
     private BigDecimal giaTour;
     private Boolean trangThai;
+    private Integer soLuong;
 
-    // --------- Lịch trình ----------
     private List<LichTrinhItem> lichTrinh;
-
-    // --------- Lịch khởi hành ----------
     private List<LichKhoiHanhItem> lichKhoiHanh;
 
-    // ============ inner class ============
+    // Getters and Setters
+    public String getMaTour() {
+        return maTour;
+    }
+
+    public void setMaTour(String maTour) {
+        this.maTour = maTour;
+    }
+
+    public String getTenTour() {
+        return tenTour;
+    }
+
+    public void setTenTour(String tenTour) {
+        this.tenTour = tenTour;
+    }
+
+    public String getDiemKhoiHanh() {
+        return diemKhoiHanh;
+    }
+
+    public void setDiemKhoiHanh(String diemKhoiHanh) {
+        this.diemKhoiHanh = diemKhoiHanh;
+    }
+
+    public Long getDiaDiemId() { // ✅ LONG CHỮ HOA
+        return diaDiemId;
+    }
+
+    public void setDiaDiemId(Long diaDiemId) { // ✅ LONG CHỮ HOA
+        this.diaDiemId = diaDiemId;
+    }
+
+    public String getMoTa() {
+        return moTa;
+    }
+
+    public void setMoTa(String moTa) {
+        this.moTa = moTa;
+    }
+
+    public Integer getSoNgay() {
+        return soNgay;
+    }
+
+    public void setSoNgay(Integer soNgay) {
+        this.soNgay = soNgay;
+    }
+
+    public Integer getSoChoToiDa() {
+        return soChoToiDa;
+    }
+
+    public void setSoChoToiDa(Integer soChoToiDa) {
+        this.soChoToiDa = soChoToiDa;
+    }
+
+    public BigDecimal getGiaTour() {
+        return giaTour;
+    }
+
+    public void setGiaTour(BigDecimal giaTour) {
+        this.giaTour = giaTour;
+    }
+
+    public Boolean getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(Boolean trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public Integer getSoLuong() {
+        return soLuong;
+    }
+
+    public void setSoLuong(Integer soLuong) {
+        this.soLuong = soLuong;
+    }
+
+    public List<LichTrinhItem> getLichTrinh() {
+        return lichTrinh;
+    }
+
+    public void setLichTrinh(List<LichTrinhItem> lichTrinh) {
+        this.lichTrinh = lichTrinh;
+    }
+
+    public List<LichKhoiHanhItem> getLichKhoiHanh() {
+        return lichKhoiHanh;
+    }
+
+    public void setLichKhoiHanh(List<LichKhoiHanhItem> lichKhoiHanh) {
+        this.lichKhoiHanh = lichKhoiHanh;
+    }
+
+    // ===== INNER CLASSES =====
 
     public static class LichTrinhItem {
-        private Long diaDiemId;
+        private Long diaDiemId; // ✅ LONG CHỮ HOA
         private Integer dichVuId;
         private String loai;
         private String moTa;
@@ -92,95 +186,5 @@ public class CreateTourRequest {
         public void setSoCho(Integer soCho) {
             this.soCho = soCho;
         }
-    }
-
-    // ============ getter / setter cho CreateTourRequest ============
-
-    public String getMaTour() {
-        return maTour;
-    }
-
-    public void setMaTour(String maTour) {
-        this.maTour = maTour;
-    }
-
-    public String getTenTour() {
-        return tenTour;
-    }
-
-    public void setTenTour(String tenTour) {
-        this.tenTour = tenTour;
-    }
-
-    public String getDiemKhoiHanh() {
-        return diemKhoiHanh;
-    }
-
-    public void setDiemKhoiHanh(String diemKhoiHanh) {
-        this.diemKhoiHanh = diemKhoiHanh;
-    }
-
-    public Long getDiaDiemId() {
-        return diaDiemId;
-    }
-
-    public void setDiaDiemId(Long diaDiemId) {
-        this.diaDiemId = diaDiemId;
-    }
-
-    public String getMoTa() {
-        return moTa;
-    }
-
-    public void setMoTa(String moTa) {
-        this.moTa = moTa;
-    }
-
-    public Integer getSoNgay() {
-        return soNgay;
-    }
-
-    public void setSoNgay(Integer soNgay) {
-        this.soNgay = soNgay;
-    }
-
-    public Integer getSoChoToiDa() {
-        return soChoToiDa;
-    }
-
-    public void setSoChoToiDa(Integer soChoToiDa) {
-        this.soChoToiDa = soChoToiDa;
-    }
-
-    public BigDecimal getGiaTour() {
-        return giaTour;
-    }
-
-    public void setGiaTour(BigDecimal giaTour) {
-        this.giaTour = giaTour;
-    }
-
-    public Boolean getTrangThai() {
-        return trangThai;
-    }
-
-    public void setTrangThai(Boolean trangThai) {
-        this.trangThai = trangThai;
-    }
-
-    public List<LichTrinhItem> getLichTrinh() {
-        return lichTrinh;
-    }
-
-    public void setLichTrinh(List<LichTrinhItem> lichTrinh) {
-        this.lichTrinh = lichTrinh;
-    }
-
-    public List<LichKhoiHanhItem> getLichKhoiHanh() {
-        return lichKhoiHanh;
-    }
-
-    public void setLichKhoiHanh(List<LichKhoiHanhItem> lichKhoiHanh) {
-        this.lichKhoiHanh = lichKhoiHanh;
     }
 }

@@ -9,17 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.TourPrjPtit_2025.dto.TourDetailResponse;
 
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/tour")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
 public class TourController {
 
     @Autowired
     private TourService service;
-
 
     @PostMapping("/create")
     public Tour create(@RequestBody Tour tour) {
@@ -37,9 +35,17 @@ public class TourController {
         return service.getAll();
     }
 
+
     @GetMapping("/{id}")
-    public Tour getById(@PathVariable String id) {
-        return service.getById(id);
+    public ResponseEntity<TourDetailResponse> getById(@PathVariable String id) {
+        try {
+            System.out.println("🔍 Getting tour detail for: " + id);
+            TourDetailResponse detail = service.getTourDetail(id);
+            return ResponseEntity.ok(detail);
+        } catch (Exception e) {
+            System.err.println("❌ Error: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}")
@@ -52,9 +58,9 @@ public class TourController {
         return service.delete(id);
     }
 
+    // ✅ GIỮ NGUYÊN endpoint này cho detail
     @GetMapping("/{id}/detail")
     public ResponseEntity<TourDetailResponse> getDetail(@PathVariable String id) {
         return ResponseEntity.ok(service.getTourDetail(id));
     }
-
 }
