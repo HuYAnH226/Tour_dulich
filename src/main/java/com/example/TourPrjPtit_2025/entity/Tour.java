@@ -1,5 +1,6 @@
 package com.example.TourPrjPtit_2025.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,8 +20,10 @@ public class Tour {
     @Column(name = "diem_khoi_hanh", length = 255)
     private String diemKhoiHanh;
 
+    // Nhiều Tour —> 1 DiaDiem (MANAGED)
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_diadiem")
+    @JsonManagedReference
     private DiaDiem diaDiem;
 
     @Column(name = "mo_ta", columnDefinition = "TEXT")
@@ -41,16 +44,13 @@ public class Tour {
     @Column(name = "ngay_tao")
     private LocalDate ngayTao;
 
-    // ✅ THÊM FIELD MỚI - SỐ LƯỢNG TOUR
     @Column(name = "so_luong")
     private Integer soLuong;
 
-    // 1 Tour có nhiều lịch khởi hành
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<LichKhoiHanh> lichKhoiHanhs;
 
-    // ===== GETTER - SETTER =====
-
+    // GETTER - SETTER
     public String getMaTour() {
         return maTour;
     }
@@ -131,7 +131,6 @@ public class Tour {
         this.ngayTao = ngayTao;
     }
 
-    // ✅ THÊM GETTER/SETTER CHO SO_LUONG
     public Integer getSoLuong() {
         return soLuong;
     }

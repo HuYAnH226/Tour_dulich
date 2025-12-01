@@ -1,5 +1,6 @@
 package com.example.TourPrjPtit_2025.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -18,12 +19,12 @@ public class DiaDiem {
     @Column(name = "hinh_anh", length = 500)
     private String hinhAnh;
 
-    // 1 địa điểm có thể nằm trong nhiều tour
+    // 1 DiaDiem —> nhiều Tour (BACK)
     @OneToMany(mappedBy = "diaDiem")
+    @JsonBackReference
     private List<Tour> tours;
 
-    // ===== GETTER - SETTER =====
-
+    // GETTER - SETTER
     public Long getMaDd() {
         return maDd;
     }
