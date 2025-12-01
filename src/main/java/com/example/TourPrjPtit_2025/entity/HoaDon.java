@@ -18,11 +18,10 @@ public class HoaDon {
     @JoinColumn(name = "ma_user", nullable = false)
     private User user;
 
-    // LICH_KHOI_HANH (n-1)
+    // TOUR (n-1)
     @ManyToOne
-    @JoinColumn(name = "id_lich", nullable = false)
-    private LichKhoiHanh lichKhoiHanh;
-
+    @JoinColumn(name = "ma_tour", nullable = false)
+    private Tour tour;
 
     @Column(name = "ngay_lap_hd")
     private LocalDateTime ngayLapHD;
@@ -30,17 +29,14 @@ public class HoaDon {
     @Column(name = "so_khach")
     private int soKhach;
 
-    @Column(name = "tong_tien", precision = 10, scale = 2)
-    private BigDecimal tongTien;
-
-    @Column(name = "tien_dat_coc", precision = 10, scale = 2)
-    private BigDecimal tienDatCoc;
 
     @Column(name = "trang_thai", length = 50)
     private String trangThai;
 
-    // GETTER - SETTER
+    @Column(name = "diem_di", length = 50)
+    private String diemDi;
 
+    // GETTER - SETTER
     public Long getMaHd() {
         return maHd;
     }
@@ -57,12 +53,12 @@ public class HoaDon {
         this.user = user;
     }
 
-    public LichKhoiHanh getLichKhoiHanh() {
-        return lichKhoiHanh;
+    public Tour getTour() {
+        return tour;
     }
 
-    public void setLichKhoiHanh(LichKhoiHanh lichKhoiHanh) {
-        this.lichKhoiHanh = lichKhoiHanh;
+    public void setTour(Tour tour) {
+        this.tour = tour;
     }
 
     public LocalDateTime getNgayLapHD() {
@@ -81,21 +77,7 @@ public class HoaDon {
         this.soKhach = soKhach;
     }
 
-    public BigDecimal getTongTien() {
-        return tongTien;
-    }
 
-    public void setTongTien(BigDecimal tongTien) {
-        this.tongTien = tongTien;
-    }
-
-    public BigDecimal getTienDatCoc() {
-        return tienDatCoc;
-    }
-
-    public void setTienDatCoc(BigDecimal tienDatCoc) {
-        this.tienDatCoc = tienDatCoc;
-    }
 
     public String getTrangThai() {
         return trangThai;
@@ -103,5 +85,13 @@ public class HoaDon {
 
     public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
+    }
+
+    public String getDiemDi() {
+        return diemDi;
+    }
+
+    public void setDiemDi(String diemDi) {
+        this.diemDi = diemDi;
     }
 }

@@ -15,7 +15,9 @@ public class HoaDonController {
     @Autowired
     private HoaDonService hoaDonService;
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create",
+            consumes = "application/json",
+            produces = "application/json")
     public HoaDon createHoaDon(@RequestBody HoaDon hoaDon) {
         return hoaDonService.create(hoaDon);
     }

@@ -13,31 +13,38 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    // Đăng ký user
-    public User register(String username, String password) {
+    // Đăng ký đầy đủ thông tin
+    public User registerFull(String tenDangNhap, String matKhau, String hoTen,
+                             String email, String soDienThoai, String soCmnd, String diaChi) {
 
         // Kiểm tra username đã tồn tại chưa
-        if (userRepository.findByTenDangNhap(username).isPresent()) {
+        if (userRepository.findByTenDangNhap(tenDangNhap).isPresent()) {
             throw new RuntimeException("Tên đăng nhập đã tồn tại");
         }
 
         User user = new User();
-        user.setTenDangNhap(username);
-        user.setMatKhau(password);  // mật khẩu không mã hóa (theo yêu cầu hiện tại)
+        user.setTenDangNhap(tenDangNhap);
+        user.setMatKhau(matKhau);
+        user.setHoTen(hoTen);
+        user.setEmail(email);
+        user.setSoDienThoai(soDienThoai);
+        user.setSoCmnd(soCmnd);
+        user.setDiaChi(diaChi);
 
         return userRepository.save(user);
     }
 
-    // Đăng nhập
-    public boolean login(String username, String password) {
-
-        Optional<User> optionalUser = userRepository.findByTenDangNhap(username);
+    // Đăng nhập trả về thông tin user nếu đúng
+    public User login(String tenDangNhap, String matKhau) {
+        Optional<User> optionalUser = userRepository.findByTenDangNhap(tenDangNhap);
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            return user.getMatKhau().equals(password);
+            if (user.getMatKhau().equals(matKhau)) {
+                return user; // đăng nhập thành công
+            }
         }
 
-        return false;
+        return null; // sai thông tin
     }
 }

@@ -31,8 +31,6 @@ public class HoaDonService {
                 .map(existing -> {
                     existing.setNgayLapHD(updated.getNgayLapHD());
                     existing.setSoKhach(updated.getSoKhach());
-                    existing.setTongTien(updated.getTongTien());
-                    existing.setTienDatCoc(updated.getTienDatCoc());
                     existing.setTrangThai(updated.getTrangThai());
                     existing.setUser(updated.getUser());
                     return hoaDonRepository.save(existing);
