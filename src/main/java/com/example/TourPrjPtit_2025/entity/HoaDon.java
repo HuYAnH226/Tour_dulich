@@ -30,9 +30,6 @@ public class HoaDon {
     private int soKhach;
 
 
-    @Column(name = "trang_thai", length = 50)
-    private String trangThai;
-
     @Column(name = "diem_di", length = 50)
     private String diemDi;
 
@@ -78,14 +75,6 @@ public class HoaDon {
     }
 
 
-
-    public String getTrangThai() {
-        return trangThai;
-    }
-
-    public void setTrangThai(String trangThai) {
-        this.trangThai = trangThai;
-    }
 
     public String getDiemDi() {
         return diemDi;

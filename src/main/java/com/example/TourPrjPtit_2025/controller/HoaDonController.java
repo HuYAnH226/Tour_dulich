@@ -4,22 +4,31 @@ import com.example.TourPrjPtit_2025.entity.HoaDon;
 import com.example.TourPrjPtit_2025.service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.example.TourPrjPtit_2025.dto.HoaDonRequest;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/hoadon")
+@CrossOrigin(origins = "*")
 public class HoaDonController {
 
     @Autowired
     private HoaDonService hoaDonService;
 
-    @PostMapping(value = "/create",
-            consumes = "application/json",
-            produces = "application/json")
-    public HoaDon createHoaDon(@RequestBody HoaDon hoaDon) {
-        return hoaDonService.create(hoaDon);
+    @PostMapping("/create")
+    public HoaDon createHoaDon(
+            @RequestParam Long userId,
+            @RequestParam String tourId,
+            @RequestBody HoaDonRequest request) {
+
+        HoaDon hoaDon = new HoaDon();
+        hoaDon.setNgayLapHD(request.getNgayLapHD());
+        hoaDon.setSoKhach(request.getSoKhach());
+        hoaDon.setDiemDi(request.getDiemDi());
+
+        return hoaDonService.create(userId, tourId, hoaDon);
     }
 
     @GetMapping("/all")
