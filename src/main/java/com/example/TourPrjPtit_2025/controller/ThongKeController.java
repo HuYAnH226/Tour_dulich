@@ -1,18 +1,20 @@
 package com.example.TourPrjPtit_2025.controller;
 
+import com.example.TourPrjPtit_2025.entity.HoaDon;
 import com.example.TourPrjPtit_2025.entity.LichKhoiHanh;
 import com.example.TourPrjPtit_2025.entity.Tour;
+import com.example.TourPrjPtit_2025.repository.HoaDonRepository;
 import com.example.TourPrjPtit_2025.service.TourService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/thong-ke")
@@ -22,8 +24,11 @@ public class ThongKeController {
     @Autowired
     private TourService tourService;
 
+    @Autowired
+    private HoaDonRepository hoaDonRepository;
+
     /**
-     * API thống kê doanh thu theo tour
+     * API thống kê doanh thu theo tour (FILTER THEO NGÀY TẠO TOUR)
      * URL: GET /api/thong-ke/revenue-by-tour?startDate=2024-01-01&endDate=2024-12-31
      */
     @GetMapping("/revenue-by-tour")
@@ -33,17 +38,64 @@ public class ThongKeController {
 
         try {
             System.out.println("📊 API Called: /revenue-by-tour");
-            System.out.println("📅 Date range: " + startDate + " to " + endDate);
+            System.out.println("📅 Filter by Tour ngay_tao: " + startDate + " to " + endDate);
 
-            List<Map<String, Object>> result = tourService.getTourRevenueStatistics(startDate, endDate);
+            // ⭐ THAY ĐỔI: Dùng query mới - filter theo ngay_tao của Tour
+            List<HoaDon> hoaDons = hoaDonRepository.findByTourNgayTaoBetween(startDate, endDate);
+
+            System.out.println("📋 Found " + hoaDons.size() + " invoices");
+
+            if (hoaDons.isEmpty()) {
+                System.out.println("⚠️ No invoices found for tours created in this date range");
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+
+            // Nhóm theo tour và tính tổng doanh thu
+            Map<String, Map<String, Object>> tourRevenueMap = new HashMap<>();
+
+            for (HoaDon hd : hoaDons) {
+                String maTour = hd.getTour().getMaTour();
+
+                // Tính doanh thu = soKhach * giaTour
+                BigDecimal doanhThu = hd.getTour().getGiaTour()
+                        .multiply(BigDecimal.valueOf(hd.getSoKhach()));
+
+                if (tourRevenueMap.containsKey(maTour)) {
+                    Map<String, Object> tourData = tourRevenueMap.get(maTour);
+                    BigDecimal currentRevenue = (BigDecimal) tourData.get("tongDoanhThu");
+                    tourData.put("tongDoanhThu", currentRevenue.add(doanhThu));
+
+                    // Cập nhật tổng số khách
+                    int currentSoKhach = (int) tourData.get("tongSoKhach");
+                    tourData.put("tongSoKhach", currentSoKhach + hd.getSoKhach());
+                } else {
+                    Map<String, Object> tourData = new HashMap<>();
+                    tourData.put("maTour", maTour);
+                    tourData.put("tenTour", hd.getTour().getTenTour());
+                    tourData.put("ngayTao", hd.getTour().getNgayTao());
+                    tourData.put("tongDoanhThu", doanhThu);
+                    tourData.put("tongSoKhach", hd.getSoKhach());
+                    tourRevenueMap.put(maTour, tourData);
+                }
+            }
+
+            // Chuyển sang List và sắp xếp theo doanh thu giảm dần
+            List<Map<String, Object>> result = new ArrayList<>(tourRevenueMap.values());
+            result.sort((a, b) -> {
+                BigDecimal revenueA = (BigDecimal) a.get("tongDoanhThu");
+                BigDecimal revenueB = (BigDecimal) b.get("tongDoanhThu");
+                return revenueB.compareTo(revenueA);
+            });
 
             System.out.println("✅ Returned " + result.size() + " tours");
+            System.out.println("📊 Sample data: " + (result.isEmpty() ? "empty" : result.get(0)));
+
             return ResponseEntity.ok(result);
 
         } catch (Exception e) {
             System.err.println("❌ Error in /revenue-by-tour: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(500).body(Collections.emptyList());
         }
     }
 
@@ -134,33 +186,49 @@ public class ThongKeController {
     }
 
     /**
-     * API lấy hóa đơn chi tiết theo tour
-     * URL: GET /api/thong-ke/invoices-by-tour?maTour=TOUR123&startDate=2024-01-01&endDate=2024-12-31
+     * ⭐ API lấy hóa đơn chi tiết theo tour (KHÔNG FILTER THEO DATE)
+     * URL: GET /api/thong-ke/invoices-by-tour?maTour=TOUR123
      */
     @GetMapping("/invoices-by-tour")
     public ResponseEntity<List<Map<String, Object>>> getInvoicesByTour(
-            @RequestParam String maTour,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam String maTour) {
 
         try {
             System.out.println("🧾 API Called: /invoices-by-tour");
             System.out.println("🎯 Tour: " + maTour);
-            System.out.println("📅 Date range: " + startDate + " to " + endDate);
 
-            // ✅ TODO: Implement query từ database khi có bảng HoaDon
-            // List<HoaDon> hoaDons = hoaDonRepository.findByTourAndDateRange(maTour, startDate, endDate);
+            // ⭐ Lấy TẤT CẢ hóa đơn của tour (không filter theo date)
+            List<HoaDon> hoaDons = hoaDonRepository.findByTourMaTour(maTour);
 
-            // ✅ TẠM THỜI: Trả về empty array
-            List<Map<String, Object>> invoices = new ArrayList<>();
+            System.out.println("📋 Found " + hoaDons.size() + " invoices");
 
-            System.out.println("✅ Returned " + invoices.size() + " invoices (chưa có data hóa đơn)");
+            if (hoaDons.isEmpty()) {
+                System.out.println("⚠️ No invoices found for this tour");
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+
+            List<Map<String, Object>> invoices = hoaDons.stream().map(hd -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("idHoaDon", hd.getMaHd());
+                map.put("tenKhachHang", hd.getUser().getHoTen());
+                map.put("ngayGioKhoiHanh", hd.getNgayLapHD());
+                map.put("soLuongKhach", hd.getSoKhach());
+
+                // Tính tổng tiền = soKhach * giaTour
+                BigDecimal tongTien = hd.getTour().getGiaTour()
+                        .multiply(BigDecimal.valueOf(hd.getSoKhach()));
+                map.put("tongTien", tongTien);
+
+                return map;
+            }).collect(Collectors.toList());
+
+            System.out.println("✅ Returned " + invoices.size() + " invoices");
             return ResponseEntity.ok(invoices);
 
         } catch (Exception e) {
             System.err.println("❌ Error in /invoices-by-tour: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(500).body(Collections.emptyList());
         }
     }
 }

@@ -5,6 +5,7 @@ import com.example.TourPrjPtit_2025.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -14,6 +15,11 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping("/all")
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
 
     // ===== ĐĂNG KÝ NGƯỜI DÙNG =====
     @PostMapping("/register")
