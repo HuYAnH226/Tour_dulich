@@ -50,6 +50,9 @@ public class Tour {
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<LichKhoiHanh> lichKhoiHanhs;
 
+    @Column(name = "anh_tour")
+    private String anhTour;
+
     // GETTER - SETTER
     public String getMaTour() {
         return maTour;
@@ -145,5 +148,13 @@ public class Tour {
 
     public void setLichKhoiHanhs(List<LichKhoiHanh> lichKhoiHanhs) {
         this.lichKhoiHanhs = lichKhoiHanhs;
+    }
+
+    public String getAnhTour() {
+        return anhTour;
+    }
+
+    public void setAnhTour(String anhTour) {
+        this.anhTour = anhTour;
     }
 }

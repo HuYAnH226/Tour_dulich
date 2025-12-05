@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.TourPrjPtit_2025.dto.TourDetailResponse;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,11 +79,15 @@ public class TourService {
             tour.setMoTa(req.getMoTa() != null ? req.getMoTa().trim() : "");
             tour.setSoNgay(req.getSoNgay() != null ? req.getSoNgay() : 1);
             tour.setSoChoToiDa(req.getSoChoToiDa() != null ? req.getSoChoToiDa() : 10);
-            tour.setGiaTour(req.getGiaTour() != null ? req.getGiaTour() : java.math.BigDecimal.ZERO);
+            tour.setGiaTour(req.getGiaTour() != null ? req.getGiaTour() : BigDecimal.ZERO);
             tour.setTrangThai(req.getTrangThai() != null ? req.getTrangThai() : true);
             tour.setNgayTao(LocalDate.now());
-
             tour.setSoLuong(req.getSoLuong() != null ? req.getSoLuong() : 0);
+
+            // ✅ SỬA LỖI: req.getAnhTour() thay vì request.getAnhTour()
+            tour.setAnhTour(req.getAnhTour());
+
+            System.out.println("📸 Ảnh tour: " + req.getAnhTour());
 
             if (req.getDiaDiemId() != null) {
                 try {
@@ -104,6 +109,7 @@ public class TourService {
             System.out.println("Tour saved successfully: " + savedTour.getMaTour());
             System.out.println("Ngày tạo tour: " + savedTour.getNgayTao());
             System.out.println("Số lượng tour: " + savedTour.getSoLuong());
+            System.out.println("Ảnh tour đã lưu: " + savedTour.getAnhTour());
 
             if (req.getLichTrinh() != null && !req.getLichTrinh().isEmpty()) {
                 List<LichTrinhTour> lichTrinhEntities = new ArrayList<>();
@@ -199,12 +205,13 @@ public class TourService {
             tour.setMoTa(req.getMoTa() != null ? req.getMoTa().trim() : "");
             tour.setSoNgay(req.getSoNgay() != null ? req.getSoNgay() : 10);
             tour.setSoChoToiDa(req.getSoChoToiDa() != null ? req.getSoChoToiDa() : 10);
-            tour.setGiaTour(req.getGiaTour() != null ? req.getGiaTour() : java.math.BigDecimal.valueOf(100000));
+            tour.setGiaTour(req.getGiaTour() != null ? req.getGiaTour() : BigDecimal.valueOf(100000));
             tour.setTrangThai(req.getTrangThai() != null ? req.getTrangThai() : true);
             tour.setNgayTao(LocalDate.now());
-
-
             tour.setSoLuong(req.getSoLuong() != null ? req.getSoLuong() : 0);
+
+            // ✅ THÊM: Set ảnh tour cho simple tour
+            tour.setAnhTour(req.getAnhTour());
 
             tour.setDiaDiem(null);
 
@@ -234,18 +241,16 @@ public class TourService {
             tour.setMoTa("");
             tour.setSoNgay(2);
             tour.setSoChoToiDa(15);
-            tour.setGiaTour(java.math.BigDecimal.valueOf(500000));
+            tour.setGiaTour(BigDecimal.valueOf(500000));
             tour.setTrangThai(true);
             tour.setDiaDiem(null);
             tour.setNgayTao(LocalDate.now());
-
-            // ✅ THÊM DÒNG NÀY
-            tour.setSoLuong(10); // Mặc định 10 tour
+            tour.setSoLuong(10);
 
             Tour saved = tourRepository.save(tour);
             System.out.println("TOUR TỰ ĐỘNG TẠO THÀNH CÔNG: " + saved.getMaTour());
             System.out.println("Ngày tạo: " + saved.getNgayTao());
-            System.out.println("Số lượng: " + saved.getSoLuong()); // ✅ LOG
+            System.out.println("Số lượng: " + saved.getSoLuong());
             return saved;
 
         } catch (Exception e) {
@@ -271,6 +276,9 @@ public class TourService {
             res.setGiaTour(tour.getGiaTour());
             res.setTrangThai(tour.getTrangThai());
             res.setNgayTao(tour.getNgayTao());
+
+            // ✅ THÊM: Trả về ảnh tour
+            res.setAnhTour(tour.getAnhTour());
 
             List<LichTrinhTour> ltList = lichTrinhRepo.findByTour_MaTour(maTour);
             List<TourDetailResponse.LichTrinhDto> ltDtoList = new ArrayList<>();
@@ -330,9 +338,13 @@ public class TourService {
                     t.setTrangThai(updated.getTrangThai());
                     t.setNgayTao(LocalDate.now());
 
-                    // ✅ THÊM DÒNG NÀY - UPDATE SỐ LƯỢNG
                     if (updated.getSoLuong() != null) {
                         t.setSoLuong(updated.getSoLuong());
+                    }
+
+                    // ✅ THÊM: Update ảnh tour
+                    if (updated.getAnhTour() != null) {
+                        t.setAnhTour(updated.getAnhTour());
                     }
 
                     return tourRepository.save(t);
@@ -367,8 +379,6 @@ public class TourService {
                 tourData.put("ngayTao", tour.getNgayTao());
                 tourData.put("soNgay", tour.getSoNgay());
                 tourData.put("soChoToiDa", tour.getSoChoToiDa());
-
-                // Tạm thời để 0 vì chưa có hóa đơn
                 tourData.put("soKhachTrungBinh", 0.0);
                 tourData.put("tongDoanhThu", 0);
 

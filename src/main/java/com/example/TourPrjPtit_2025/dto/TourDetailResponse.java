@@ -23,6 +23,9 @@ public class TourDetailResponse {
     public void setNgayTao(LocalDate ngayTao) {
     }
 
+    public void setAnhTour(String anhTour) {
+    }
+
     public static class LichTrinhDto {
         private String loai;      // dd/dv
         private String tenDiaDiem;

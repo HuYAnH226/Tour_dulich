@@ -63,4 +63,9 @@ public class HoaDonService {
         }
         return false;
     }
+
+    public List<HoaDon> getByUserId(Long userId) {
+        return hoaDonRepository.findByUser_MaUser(userId);
+    }
+
 }

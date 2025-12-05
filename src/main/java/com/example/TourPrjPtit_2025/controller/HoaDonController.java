@@ -9,9 +9,9 @@ import com.example.TourPrjPtit_2025.dto.HoaDonRequest;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/hoadon")
-@CrossOrigin(origins = "*")
 public class HoaDonController {
 
     @Autowired
@@ -49,5 +49,10 @@ public class HoaDonController {
     @DeleteMapping("/{id}")
     public boolean delete(@PathVariable Long id) {
         return hoaDonService.delete(id);
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<HoaDon> getByUser(@PathVariable Long userId) {
+        return hoaDonService.getByUserId(userId);
     }
 }

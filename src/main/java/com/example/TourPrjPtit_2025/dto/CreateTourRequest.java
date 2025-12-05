@@ -19,8 +19,18 @@ public class CreateTourRequest {
 
     private List<LichTrinhItem> lichTrinh;
     private List<LichKhoiHanhItem> lichKhoiHanh;
+    private String anhTour;
 
     // Getters and Setters
+
+    public String getAnhTour() {
+        return anhTour;
+    }
+
+    public void setAnhTour(String anhTour) {
+        this.anhTour = anhTour;
+    }
+
     public String getMaTour() {
         return maTour;
     }

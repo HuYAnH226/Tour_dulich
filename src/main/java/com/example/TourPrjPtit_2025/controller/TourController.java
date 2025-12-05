@@ -8,6 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.TourPrjPtit_2025.dto.TourDetailResponse;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import java.util.List;
 
@@ -58,9 +63,36 @@ public class TourController {
         return service.delete(id);
     }
 
-    // ✅ GIỮ NGUYÊN endpoint này cho detail
+
     @GetMapping("/{id}/detail")
     public ResponseEntity<TourDetailResponse> getDetail(@PathVariable String id) {
         return ResponseEntity.ok(service.getTourDetail(id));
     }
+    @PostMapping("/upload-image")
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("File trống");
+            }
+
+            String uploadDir = "uploads/tours/";
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+
+            String relativePath = "/uploads/tours/" + fileName;
+            return ResponseEntity.ok(relativePath);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi upload: " + e.getMessage());
+        }
+    }
+
 }
