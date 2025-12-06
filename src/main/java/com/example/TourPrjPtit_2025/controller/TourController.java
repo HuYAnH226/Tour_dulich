@@ -94,5 +94,17 @@ public class TourController {
                     .body("Lỗi upload: " + e.getMessage());
         }
     }
+    @PutMapping("/update-full/{maTour}")
+    public ResponseEntity<Tour> updateFull(
+            @PathVariable String maTour,
+            @RequestBody CreateTourRequest request
+    ) {
+        try {
+            Tour updated = service.updateFullTour(maTour, request);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 
 }

@@ -9,7 +9,7 @@ public class CreateTourRequest {
     private String maTour;
     private String tenTour;
     private String diemKhoiHanh;
-    private Long diaDiemId; // ✅ LONG CHỮ HOA
+    private Long diaDiemId;
     private String moTa;
     private Integer soNgay;
     private Integer soChoToiDa;

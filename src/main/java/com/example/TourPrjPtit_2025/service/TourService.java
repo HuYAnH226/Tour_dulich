@@ -83,8 +83,6 @@ public class TourService {
             tour.setTrangThai(req.getTrangThai() != null ? req.getTrangThai() : true);
             tour.setNgayTao(LocalDate.now());
             tour.setSoLuong(req.getSoLuong() != null ? req.getSoLuong() : 0);
-
-            // ✅ SỬA LỖI: req.getAnhTour() thay vì request.getAnhTour()
             tour.setAnhTour(req.getAnhTour());
 
             System.out.println("📸 Ảnh tour: " + req.getAnhTour());
@@ -182,6 +180,77 @@ public class TourService {
         }
     }
 
+    // ✅ THÊM METHOD UPDATE FULL TOUR
+    @Transactional
+    public Tour updateFullTour(String maTour, CreateTourRequest req) {
+        try {
+            System.out.println("=== BẮT ĐẦU CẬP NHẬT TOUR: " + maTour + " ===");
+
+            // Kiểm tra tour có tồn tại không
+            Tour existingTour = tourRepository.findById(maTour)
+                    .orElseThrow(() -> new RuntimeException("Tour không tồn tại: " + maTour));
+
+            // Validate
+            if (req.getTenTour() == null || req.getTenTour().trim().isEmpty()) {
+                throw new RuntimeException("Tên tour không được để trống");
+            }
+
+            // Cập nhật thông tin tour
+            existingTour.setTenTour(req.getTenTour().trim());
+            existingTour.setDiemKhoiHanh(req.getDiemKhoiHanh() != null ? req.getDiemKhoiHanh().trim() : "");
+            existingTour.setMoTa(req.getMoTa() != null ? req.getMoTa().trim() : "");
+            existingTour.setSoNgay(req.getSoNgay() != null ? req.getSoNgay() : existingTour.getSoNgay());
+            existingTour.setSoChoToiDa(req.getSoChoToiDa() != null ? req.getSoChoToiDa() : existingTour.getSoChoToiDa());
+            existingTour.setGiaTour(req.getGiaTour() != null ? req.getGiaTour() : existingTour.getGiaTour());
+
+            // Cập nhật số lượng nếu có
+            if (req.getSoLuong() != null) {
+                existingTour.setSoLuong(req.getSoLuong());
+            }
+
+            // Cập nhật ảnh tour nếu có
+            if (req.getAnhTour() != null && !req.getAnhTour().trim().isEmpty()) {
+                existingTour.setAnhTour(req.getAnhTour());
+                System.out.println("📸 Cập nhật ảnh tour: " + req.getAnhTour());
+            }
+
+            // Cập nhật trạng thái nếu có
+            if (req.getTrangThai() != null) {
+                existingTour.setTrangThai(req.getTrangThai());
+            }
+
+            // Cập nhật địa điểm nếu có
+            if (req.getDiaDiemId() != null) {
+                try {
+                    DiaDiem dd = diaDiemRepo.findById(req.getDiaDiemId()).orElse(null);
+                    existingTour.setDiaDiem(dd);
+                    if (dd != null) {
+                        System.out.println("Đã cập nhật DiaDiem: " + dd.getTenDd());
+                    }
+                } catch (Exception e) {
+                    System.err.println("Lỗi khi cập nhật địa điểm: " + e.getMessage());
+                }
+            }
+
+            // Lưu tour đã cập nhật
+            Tour updatedTour = tourRepository.save(existingTour);
+            System.out.println("✅ Cập nhật tour thành công: " + updatedTour.getMaTour());
+            System.out.println("Tên tour: " + updatedTour.getTenTour());
+            System.out.println("Giá tour: " + updatedTour.getGiaTour());
+            System.out.println("Số ngày: " + updatedTour.getSoNgay());
+            System.out.println("Ảnh tour: " + updatedTour.getAnhTour());
+
+            System.out.println("=== CẬP NHẬT TOUR HOÀN TẤT ===");
+            return updatedTour;
+
+        } catch (Exception e) {
+            System.err.println("=== LỖI KHI CẬP NHẬT TOUR ===");
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Không thể cập nhật tour: " + e.getMessage(), e);
+        }
+    }
+
     @Transactional
     public Tour createSimpleTour(CreateTourRequest req) {
         try {
@@ -209,10 +278,7 @@ public class TourService {
             tour.setTrangThai(req.getTrangThai() != null ? req.getTrangThai() : true);
             tour.setNgayTao(LocalDate.now());
             tour.setSoLuong(req.getSoLuong() != null ? req.getSoLuong() : 0);
-
-            // ✅ THÊM: Set ảnh tour cho simple tour
             tour.setAnhTour(req.getAnhTour());
-
             tour.setDiaDiem(null);
 
             Tour savedTour = tourRepository.save(tour);
@@ -276,8 +342,6 @@ public class TourService {
             res.setGiaTour(tour.getGiaTour());
             res.setTrangThai(tour.getTrangThai());
             res.setNgayTao(tour.getNgayTao());
-
-            // ✅ THÊM: Trả về ảnh tour
             res.setAnhTour(tour.getAnhTour());
 
             List<LichTrinhTour> ltList = lichTrinhRepo.findByTour_MaTour(maTour);
@@ -342,7 +406,6 @@ public class TourService {
                         t.setSoLuong(updated.getSoLuong());
                     }
 
-                    // ✅ THÊM: Update ảnh tour
                     if (updated.getAnhTour() != null) {
                         t.setAnhTour(updated.getAnhTour());
                     }
