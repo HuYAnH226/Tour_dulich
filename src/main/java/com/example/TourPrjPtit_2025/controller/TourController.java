@@ -40,7 +40,6 @@ public class TourController {
         return service.getAll();
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<TourDetailResponse> getById(@PathVariable String id) {
         try {
@@ -63,11 +62,11 @@ public class TourController {
         return service.delete(id);
     }
 
-
     @GetMapping("/{id}/detail")
     public ResponseEntity<TourDetailResponse> getDetail(@PathVariable String id) {
         return ResponseEntity.ok(service.getTourDetail(id));
     }
+
     @PostMapping("/upload-image")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
@@ -85,7 +84,6 @@ public class TourController {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-
             String relativePath = "/uploads/tours/" + fileName;
             return ResponseEntity.ok(relativePath);
 
@@ -94,6 +92,7 @@ public class TourController {
                     .body("Lỗi upload: " + e.getMessage());
         }
     }
+
     @PutMapping("/update-full/{maTour}")
     public ResponseEntity<Tour> updateFull(
             @PathVariable String maTour,
@@ -107,4 +106,17 @@ public class TourController {
         }
     }
 
+    // ✅ THÊM MỚI: Endpoint đặt tour
+    @PostMapping("/{maTour}/book")
+    public ResponseEntity<?> bookTour(
+            @PathVariable String maTour,
+            @RequestParam int soLuongDat
+    ) {
+        try {
+            service.bookTour(maTour, soLuongDat);
+            return ResponseEntity.ok("Đặt tour thành công!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

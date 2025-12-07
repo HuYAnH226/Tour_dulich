@@ -180,22 +180,18 @@ public class TourService {
         }
     }
 
-    // ✅ THÊM METHOD UPDATE FULL TOUR
     @Transactional
     public Tour updateFullTour(String maTour, CreateTourRequest req) {
         try {
             System.out.println("=== BẮT ĐẦU CẬP NHẬT TOUR: " + maTour + " ===");
 
-            // Kiểm tra tour có tồn tại không
             Tour existingTour = tourRepository.findById(maTour)
                     .orElseThrow(() -> new RuntimeException("Tour không tồn tại: " + maTour));
 
-            // Validate
             if (req.getTenTour() == null || req.getTenTour().trim().isEmpty()) {
                 throw new RuntimeException("Tên tour không được để trống");
             }
 
-            // Cập nhật thông tin tour
             existingTour.setTenTour(req.getTenTour().trim());
             existingTour.setDiemKhoiHanh(req.getDiemKhoiHanh() != null ? req.getDiemKhoiHanh().trim() : "");
             existingTour.setMoTa(req.getMoTa() != null ? req.getMoTa().trim() : "");
@@ -203,23 +199,19 @@ public class TourService {
             existingTour.setSoChoToiDa(req.getSoChoToiDa() != null ? req.getSoChoToiDa() : existingTour.getSoChoToiDa());
             existingTour.setGiaTour(req.getGiaTour() != null ? req.getGiaTour() : existingTour.getGiaTour());
 
-            // Cập nhật số lượng nếu có
             if (req.getSoLuong() != null) {
                 existingTour.setSoLuong(req.getSoLuong());
             }
 
-            // Cập nhật ảnh tour nếu có
             if (req.getAnhTour() != null && !req.getAnhTour().trim().isEmpty()) {
                 existingTour.setAnhTour(req.getAnhTour());
                 System.out.println("📸 Cập nhật ảnh tour: " + req.getAnhTour());
             }
 
-            // Cập nhật trạng thái nếu có
             if (req.getTrangThai() != null) {
                 existingTour.setTrangThai(req.getTrangThai());
             }
 
-            // Cập nhật địa điểm nếu có
             if (req.getDiaDiemId() != null) {
                 try {
                     DiaDiem dd = diaDiemRepo.findById(req.getDiaDiemId()).orElse(null);
@@ -232,7 +224,6 @@ public class TourService {
                 }
             }
 
-            // Lưu tour đã cập nhật
             Tour updatedTour = tourRepository.save(existingTour);
             System.out.println("✅ Cập nhật tour thành công: " + updatedTour.getMaTour());
             System.out.println("Tên tour: " + updatedTour.getTenTour());
@@ -456,5 +447,43 @@ public class TourService {
             e.printStackTrace();
             return List.of();
         }
+    }
+
+    // ✅ THÊM MỚI: Method để xử lý đặt tour và giảm số lượng
+    @Transactional
+    public void bookTour(String maTour, int soLuongDat) {
+        System.out.println("🎫 Bắt đầu đặt tour: " + maTour + " - Số lượng: " + soLuongDat);
+
+        // Tìm tour
+        Tour tour = tourRepository.findById(maTour)
+                .orElseThrow(() -> new RuntimeException("Tour không tồn tại!"));
+
+        // Kiểm tra số lượng tour còn lại
+        Integer soLuongHienTai = tour.getSoLuong();
+        if (soLuongHienTai == null) {
+            soLuongHienTai = 0;
+        }
+
+        System.out.println("📊 Số lượng hiện tại: " + soLuongHienTai);
+
+        // Kiểm tra đủ chỗ không
+        if (soLuongHienTai < soLuongDat) {
+            throw new RuntimeException("Không đủ chỗ! Chỉ còn " + soLuongHienTai + " chỗ.");
+        }
+
+        // GIẢM SỐ LƯỢNG TOUR
+        int soLuongMoi = soLuongHienTai - soLuongDat;
+        tour.setSoLuong(soLuongMoi);
+
+        // ✅ TỰ ĐỘNG ẨN TOUR KHI HẾT CHỖ
+        if (soLuongMoi == 0) {
+            tour.setTrangThai(false);
+            System.out.println("⚠️ Tour đã hết chỗ - Tự động ẩn khỏi trang chủ");
+        }
+
+        tourRepository.save(tour);
+
+        System.out.println("✅ Đặt tour thành công! Số lượng còn lại: " + tour.getSoLuong());
+        System.out.println("📌 Trạng thái tour: " + (tour.getTrangThai() ? "Hiển thị" : "Ẩn"));
     }
 }
