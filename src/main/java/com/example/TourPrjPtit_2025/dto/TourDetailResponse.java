@@ -16,6 +16,7 @@ public class TourDetailResponse {
     private Integer soChoToiDa;
     private BigDecimal giaTour;
     private Boolean trangThai;
+    private String anhTour;
 
     private List<LichTrinhDto> lichTrinh;
     private List<LichKhoiHanhDto> lichKhoiHanh;
@@ -23,8 +24,6 @@ public class TourDetailResponse {
     public void setNgayTao(LocalDate ngayTao) {
     }
 
-    public void setAnhTour(String anhTour) {
-    }
 
     public static class LichTrinhDto {
         private String loai;      // dd/dv
@@ -83,4 +82,6 @@ public class TourDetailResponse {
     public void setLichTrinh(List<LichTrinhDto> lichTrinh) { this.lichTrinh = lichTrinh; }
     public List<LichKhoiHanhDto> getLichKhoiHanh() { return lichKhoiHanh; }
     public void setLichKhoiHanh(List<LichKhoiHanhDto> lichKhoiHanh) { this.lichKhoiHanh = lichKhoiHanh; }
+    public String getAnhTour() { return anhTour; }
+    public void setAnhTour(String anhTour) { this.anhTour = anhTour; }
 }
