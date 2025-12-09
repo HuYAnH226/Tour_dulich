@@ -449,41 +449,43 @@ public class TourService {
         }
     }
 
-    // ✅ THÊM MỚI: Method để xử lý đặt tour và giảm số lượng
+    // ✅ SỬA LẠI: Method xử lý đặt tour - CHỈ TRỪ 1 TOUR
     @Transactional
-    public void bookTour(String maTour, int soLuongDat) {
-        System.out.println("🎫 Bắt đầu đặt tour: " + maTour + " - Số lượng: " + soLuongDat);
+    public void bookTour(String maTour, int soLuongKhach) {
+        System.out.println("🎫 Bắt đầu đặt tour: " + maTour + " - Số khách: " + soLuongKhach);
 
         // Tìm tour
         Tour tour = tourRepository.findById(maTour)
                 .orElseThrow(() -> new RuntimeException("Tour không tồn tại!"));
 
-        // Kiểm tra số lượng tour còn lại
-        Integer soLuongHienTai = tour.getSoLuong();
-        if (soLuongHienTai == null) {
-            soLuongHienTai = 0;
+        // Lấy số lượng TOUR còn lại (không phải số khách)
+        Integer soLuongTourHienTai = tour.getSoLuong();
+        if (soLuongTourHienTai == null) {
+            soLuongTourHienTai = 0;
         }
 
-        System.out.println("📊 Số lượng hiện tại: " + soLuongHienTai);
+        System.out.println("📊 Số lượng TOUR hiện tại: " + soLuongTourHienTai);
 
-        // Kiểm tra đủ chỗ không
-        if (soLuongHienTai < soLuongDat) {
-            throw new RuntimeException("Không đủ chỗ! Chỉ còn " + soLuongHienTai + " chỗ.");
+        // Kiểm tra còn tour không
+        if (soLuongTourHienTai < 1) {
+            throw new RuntimeException("Tour này đã hết chỗ!");
         }
 
-        // GIẢM SỐ LƯỢNG TOUR
-        int soLuongMoi = soLuongHienTai - soLuongDat;
-        tour.setSoLuong(soLuongMoi);
+        // ✅ GIẢM 1 TOUR (không phụ thuộc số lượng khách)
+        int soLuongTourMoi = soLuongTourHienTai - 1;
+        tour.setSoLuong(soLuongTourMoi);
 
-        // ✅ TỰ ĐỘNG ẨN TOUR KHI HẾT CHỖ
-        if (soLuongMoi == 0) {
+        // ✅ TỰ ĐỘNG ẨN TOUR KHI HẾT
+        if (soLuongTourMoi == 0) {
             tour.setTrangThai(false);
-            System.out.println("⚠️ Tour đã hết chỗ - Tự động ẩn khỏi trang chủ");
+            System.out.println("⚠️ Tour đã hết - Tự động ẩn khỏi trang chủ");
         }
 
         tourRepository.save(tour);
 
-        System.out.println("✅ Đặt tour thành công! Số lượng còn lại: " + tour.getSoLuong());
-        System.out.println("📌 Trạng thái tour: " + (tour.getTrangThai() ? "Hiển thị" : "Ẩn"));
+        System.out.println("✅ Đặt tour thành công!");
+        System.out.println("👥 Số khách đặt: " + soLuongKhach);
+        System.out.println("🎫 Số tour còn lại: " + tour.getSoLuong());
+        System.out.println("📌 Trạng thái: " + (tour.getTrangThai() ? "Hiển thị" : "Ẩn"));
     }
 }
